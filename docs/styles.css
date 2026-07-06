@@ -103,11 +103,25 @@ h2 {
   letter-spacing: 0;
 }
 
-.title-copy p:last-child {
+.subtitle {
   margin-bottom: 0;
   color: var(--muted);
   font-size: 1.08rem;
   line-height: 1.75;
+}
+
+.version-badge {
+  display: inline-flex;
+  width: fit-content;
+  margin-top: 14px;
+  padding: 6px 10px;
+  border: 1px solid rgba(48, 66, 74, 0.12);
+  border-radius: 999px;
+  color: #7a7f75;
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.2;
+  background: rgba(255, 255, 255, 0.62);
 }
 
 .sky-picture {

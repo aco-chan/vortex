@@ -57,6 +57,13 @@ http://localhost:8000
 - `docs/index.html`: 画面の骨組み
 - `docs/styles.css`: 見た目、余白、色、絵本風の飾り
 - `docs/script.js`: 選択肢、画面の切り替え、物語の仮データ
+- `CHANGELOG.md`: 変更履歴とバージョン管理
+- `push-docs.command`: 変更をGitHubへ送るためのダブルクリック用ファイル
+
+## 変更履歴
+
+変更内容は `CHANGELOG.md` で管理します。
+`push-docs.command` を使うと、READMEや `/docs` のファイルと一緒に `CHANGELOG.md` もGitHubへ送られます。
 
 ## 今後よくできそうなこと
 
