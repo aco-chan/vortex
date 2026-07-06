@@ -12,6 +12,7 @@
 
 ## 開き方
 
+GitHub Pagesの公開元は `/docs` フォルダです。
 このフォルダで、次のどちらかの方法で確認できます。
 
 ### GitHub Pagesで見る
@@ -24,14 +25,14 @@ https://aco-chan.github.io/vortex/
 
 ### そのまま開く
 
-`index.html` をダブルクリックするとブラウザで開けます。
+`docs/index.html` をダブルクリックするとブラウザで開けます。
 
 ### ローカル表示で開く
 
 表示がうまくいかない場合は、ターミナルでこのフォルダに移動してから次を実行します。
 
 ```bash
-python3 -m http.server 8000
+python3 -m http.server 8000 -d docs
 ```
 
 そのあと、ブラウザで次を開きます。
@@ -42,9 +43,9 @@ http://localhost:8000
 
 ## ファイル
 
-- `index.html`: 画面の骨組み
-- `styles.css`: 見た目、余白、色、絵本風の飾り
-- `script.js`: 選択肢、画面の切り替え、物語の仮データ
+- `docs/index.html`: 画面の骨組み
+- `docs/styles.css`: 見た目、余白、色、絵本風の飾り
+- `docs/script.js`: 選択肢、画面の切り替え、物語の仮データ
 
 ## 今後よくできそうなこと
 
