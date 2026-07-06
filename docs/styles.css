@@ -83,6 +83,13 @@ button {
   letter-spacing: 0;
 }
 
+.screen-note {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
 h1,
 h2,
 p {
@@ -222,6 +229,22 @@ h2 {
   gap: 12px;
 }
 
+.choice-group {
+  display: grid;
+  gap: 10px;
+}
+
+.choice-group + .choice-group {
+  margin-top: 10px;
+}
+
+.choice-group-title {
+  margin: 8px 0 0;
+  color: #7f6f97;
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
 .choice-button,
 .primary-button,
 .quiet-button {
@@ -264,6 +287,78 @@ h2 {
   font-size: 1.08rem;
   font-weight: 700;
   line-height: 1.4;
+}
+
+.name-card {
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 12px 26px rgba(63, 66, 55, 0.08);
+}
+
+.field-label,
+.suffix-field legend {
+  color: #56666a;
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.name-input {
+  width: 100%;
+  min-height: 58px;
+  padding: 14px 16px;
+  border: 2px solid rgba(48, 66, 74, 0.12);
+  border-radius: 8px;
+  color: var(--ink);
+  font: inherit;
+  font-size: 1.12rem;
+  background: rgba(255, 250, 240, 0.82);
+}
+
+.name-input:focus {
+  border-color: rgba(127, 111, 151, 0.5);
+  outline: 0;
+}
+
+.suffix-field {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.suffix-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.suffix-options label {
+  min-height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid rgba(48, 66, 74, 0.12);
+  border-radius: 8px;
+  color: #3f5258;
+  font-weight: 800;
+  background: rgba(215, 234, 223, 0.46);
+}
+
+.suffix-options input {
+  accent-color: #8fae9a;
+}
+
+.name-preview {
+  margin: 0;
+  color: #7f6f97;
+  font-size: 0.95rem;
+  font-weight: 800;
+  line-height: 1.6;
 }
 
 .primary-button {
@@ -424,6 +519,24 @@ h2 {
   margin-bottom: 4px;
   color: #7f6f97;
   font-size: 0.76rem;
+}
+
+.compass-box {
+  margin-top: 12px;
+  padding: 14px;
+  border-radius: 8px;
+  color: #4d5149;
+  font-size: 0.98rem;
+  line-height: 1.7;
+  background: rgba(244, 201, 143, 0.35);
+}
+
+.compass-box span {
+  display: block;
+  margin-bottom: 4px;
+  color: #9a6f38;
+  font-size: 0.8rem;
+  font-weight: 800;
 }
 
 @keyframes rise {

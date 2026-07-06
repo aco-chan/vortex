@@ -23,16 +23,53 @@
           <p class="eyebrow">feelings picturebook</p>
           <h1>きもちの絵本</h1>
           <p class="subtitle">いまの気持ちに、そっと物語を</p>
-          <p class="version-badge">version v0.4.0 / 2026-07-07</p>
+          <p class="version-badge">version v0.5.0 / 2026-07-07</p>
         </div>
 
         <button class="primary-button" type="button" data-start>はじめる</button>
+      </section>
+
+      <section class="screen" id="name-screen">
+        <header class="screen-header">
+          <p class="step-label">Prologue</p>
+          <h2>きょうの主人公の名前は？</h2>
+          <p class="screen-note">物語の中では、選んだ呼び方で登場します。</p>
+        </header>
+
+        <div class="name-card">
+          <label class="field-label" for="hero-name">名前をいれてね</label>
+          <input
+            class="name-input"
+            id="hero-name"
+            type="text"
+            inputmode="text"
+            maxlength="16"
+            placeholder="例：ねこ"
+            autocomplete="off"
+          />
+
+          <fieldset class="suffix-field">
+            <legend>呼び方</legend>
+            <div class="suffix-options">
+              <label><input type="radio" name="suffix" value="ちゃん" checked />ちゃん</label>
+              <label><input type="radio" name="suffix" value="くん" />くん</label>
+              <label><input type="radio" name="suffix" value="さん" />さん</label>
+              <label><input type="radio" name="suffix" value="" />呼び捨て</label>
+            </div>
+          </fieldset>
+
+          <p class="name-preview" id="name-preview">あなたちゃんとして物語に出てきます</p>
+        </div>
+
+        <button class="primary-button" type="button" data-name-next>つぎへ</button>
+        <button class="quiet-button" type="button" data-back="title-screen">もどる</button>
       </section>
 
       <section class="screen" id="emotion-screen">
         <header class="screen-header">
           <p class="step-label">R: Raw Emotion</p>
           <h2>まず、いまの気持ちをそのまま選んでね</h2>
+          <p class="screen-note">どの気持ちも、ここにいていいものとして選べます。</p>
         </header>
         <div class="choice-list" id="emotion-list"></div>
       </section>
@@ -62,6 +99,7 @@
           <h2 id="story-title"></h2>
           <div class="story-text" id="story-text"></div>
           <div class="perspective-box" id="perspective-box"></div>
+          <div class="compass-box" id="compass-box"></div>
         </article>
         <button class="primary-button" type="button" data-reset>もう一度えらぶ</button>
       </section>
