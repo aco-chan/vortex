@@ -30,16 +30,16 @@
 
       <section class="screen" id="emotion-screen">
         <header class="screen-header">
-          <p class="step-label">1 / 3</p>
-          <h2>いまの気持ちに近いものを選んでね</h2>
+          <p class="step-label">R: Raw Emotion</p>
+          <h2>まず、いまの気持ちをそのまま選んでね</h2>
         </header>
         <div class="choice-list" id="emotion-list"></div>
       </section>
 
       <section class="screen" id="detail-screen">
         <header class="screen-header">
-          <p class="step-label">2 / 3</p>
-          <h2 id="detail-title">その気持ちのそばにあるものは？</h2>
+          <p class="step-label">L: Labeling</p>
+          <h2 id="detail-title">その気持ちの奥にありそうなものは？</h2>
         </header>
         <div class="choice-list" id="detail-list"></div>
         <button class="quiet-button" type="button" data-back="emotion-screen">もどる</button>
@@ -47,8 +47,8 @@
 
       <section class="screen" id="scene-screen">
         <header class="screen-header">
-          <p class="step-label">3 / 3</p>
-          <h2>物語の景色を選んでね</h2>
+          <p class="step-label">T: Translation</p>
+          <h2>その気持ちを、どんな景色に翻訳する？</h2>
         </header>
         <div class="choice-list" id="scene-list"></div>
         <button class="quiet-button" type="button" data-back="detail-screen">もどる</button>
@@ -60,6 +60,7 @@
           <p class="story-kicker">あなたのための小さなお話</p>
           <h2 id="story-title"></h2>
           <div class="story-text" id="story-text"></div>
+          <div class="perspective-box" id="perspective-box"></div>
         </article>
         <button class="primary-button" type="button" data-reset>もう一度えらぶ</button>
       </section>

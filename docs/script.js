@@ -4,20 +4,46 @@ const state = {
   scene: null,
 };
 
+const companions = {
+  bird: "ことりのぴー",
+  seal: "ごまじろう",
+};
+
 const emotions = [
   {
     id: "iraira",
     label: "いらいら",
     mark: "火",
     color: "#f3c7c6",
-    title: "赤い実をにぎった子",
-    storyName: "胸の中の小さな火",
-    phrase: "胸の奥で小さな火がぱちぱち鳴っていました",
-    accept: "その火は、こわいものではありませんでした。大切にしたかったものが、ここにあるよと知らせていたのです。",
+    character: "ぷんぷんを抱えた子",
+    storyName: "ぷんぷんの中にあったもの",
+    rawLine: "胸の中で、赤い実みたいな気持ちがぎゅっと熱くなっていました。",
+    translation:
+      "怒りは、悪い子のしるしではありませんでした。ほんとうは大事にしたいものが、ここにあるよと知らせる、願いのかたちでした。",
+    refined:
+      "ぷんぷんはまだ少し残っていたけれど、その子はもう、ぷんぷんだけでできているわけではありませんでした。",
     details: [
-      { id: "understand", label: "誰かにわかってほしい", line: "ほんとうは、わかってほしかっただけなのかもしれません。" },
-      { id: "alone", label: "ひとりになりたい", line: "少しだけ、だれの声も届かない場所にいたかったのです。" },
-      { id: "cant-say", label: "うまく言えない", line: "言葉になる前の気持ちが、胸の中で肩を寄せあっていました。" },
+      {
+        id: "understand",
+        label: "わかってほしい",
+        line: "ほんとうは、だれかに気づいてほしかったのかもしれません。",
+        wish: "わかってほしいという願い",
+        phrase: "「わかってほしかったんだ」",
+      },
+      {
+        id: "boundary",
+        label: "いやだと言いたい",
+        line: "ほんとうは、ここから先はいやだよ、と言いたかったのかもしれません。",
+        wish: "自分を守りたいという願い",
+        phrase: "「いまはいやだって言いたい」",
+      },
+      {
+        id: "love",
+        label: "大切だからこわい",
+        line: "ほんとうは、大切なものをこぼしたくなくて、力が入っていたのかもしれません。",
+        wish: "大切にしたいという願い",
+        phrase: "「大切だから、こんなに熱くなるんだ」",
+      },
     ],
   },
   {
@@ -25,14 +51,35 @@ const emotions = [
     label: "かなしい",
     mark: "雨",
     color: "#b7d6df",
-    title: "雨つぶのポケット",
-    storyName: "青い雨の帰り道",
-    phrase: "目に見えない雨が、こころのポケットにたまっていました",
-    accept: "雨は弱さではありませんでした。大切だったものの形を、そっと映しているだけでした。",
+    character: "涙をポケットに入れた子",
+    storyName: "涙のあとに見えた光",
+    rawLine: "目に見えない雨が、ほっぺの内側を静かにぬらしていました。",
+    translation:
+      "涙は、弱いから出てくるものではありませんでした。心がちゃんと感じているよ、と知らせる小さな水でした。",
+    refined:
+      "涙は消えきらなかったけれど、その子は涙のあとに、小さな光を見つけられる子でした。",
     details: [
-      { id: "cry", label: "本当は泣きたい", line: "泣きたい気持ちは、しまいこまれた小さな泉のようでした。" },
-      { id: "miss", label: "なくしたものがある", line: "もう手の中にないものを、心はまだやさしく覚えていました。" },
-      { id: "quiet", label: "静かにしていたい", line: "今はただ、静けさにとなりに座っていてほしかったのです。" },
+      {
+        id: "cry",
+        label: "本当は泣きたい",
+        line: "ほんとうは、がまんしていた涙に場所をあげたかったのかもしれません。",
+        wish: "泣いてもいい場所がほしいという願い",
+        phrase: "「泣きたいくらい、ちゃんと感じているんだ」",
+      },
+      {
+        id: "lonely",
+        label: "ひとりでさみしい",
+        line: "ほんとうは、そばにいるよと言ってくれる声を探していたのかもしれません。",
+        wish: "つながっていたいという願い",
+        phrase: "「ひとりじゃないって知りたい」",
+      },
+      {
+        id: "miss",
+        label: "なくしたものがある",
+        line: "ほんとうは、もう手にないものを、まだ大事に思っていたのかもしれません。",
+        wish: "大切だったものを覚えていたいという願い",
+        phrase: "「まだ大事なんだ」",
+      },
     ],
   },
   {
@@ -40,14 +87,35 @@ const emotions = [
     label: "つかれた",
     mark: "灯",
     color: "#f4c98f",
-    title: "眠たいランプ",
-    storyName: "小さな灯りの休み時間",
-    phrase: "からだの中のランプが、少し低い光でともっていました",
-    accept: "その光は消えそうなのではなく、休みたいと教えてくれていました。",
+    character: "小さな灯りを持った子",
+    storyName: "休みたい灯り",
+    rawLine: "からだの中のランプが、いつもより低い光でともっていました。",
+    translation:
+      "疲れは、がんばりが足りない合図ではありませんでした。たくさん運んできた心と体が、ここで休もうと教えてくれていました。",
+    refined:
+      "灯りは強くならなかったけれど、消えそうな灯りを両手で包むことはできました。",
     details: [
-      { id: "rest", label: "何もしたくない", line: "何もしない時間にも、ちゃんと意味がありました。" },
-      { id: "heavy", label: "からだが重い", line: "足も肩も、長い旅をしてきた石のように重く感じました。" },
-      { id: "sleep", label: "眠りたい", line: "まぶたの裏に、やわらかな毛布の国が見えていました。" },
+      {
+        id: "rest",
+        label: "何もしたくない",
+        line: "ほんとうは、何もしない時間に体を置きたかったのかもしれません。",
+        wish: "休んでもいいという許し",
+        phrase: "「いまは休みたい」",
+      },
+      {
+        id: "heavy",
+        label: "からだが重い",
+        line: "ほんとうは、ひとりで持っていた荷物を少し下ろしたかったのかもしれません。",
+        wish: "荷物を下ろしたいという願い",
+        phrase: "「少し軽くなりたい」",
+      },
+      {
+        id: "quiet",
+        label: "静かにしたい",
+        line: "ほんとうは、音の少ない場所で息をしたかったのかもしれません。",
+        wish: "静けさに守られたいという願い",
+        phrase: "「今は静かなところにいたい」",
+      },
     ],
   },
   {
@@ -55,14 +123,35 @@ const emotions = [
     label: "ふあん",
     mark: "月",
     color: "#c7bfdc",
-    title: "月を待つ小舟",
-    storyName: "ゆれる小舟と月の道",
-    phrase: "まだ起きていないことの影が、足もとでゆれていました",
-    accept: "ゆれることは、だめなことではありませんでした。見えない道を見ようとして、心が一生懸命だったのです。",
+    character: "月を待つ小舟",
+    storyName: "ゆれる小舟の見つけたもの",
+    rawLine: "まだ起きていないことの影が、足もとでゆらゆら揺れていました。",
+    translation:
+      "不安は、こわがりだから来るものではありませんでした。見えない先を一生懸命見ようとする、心の灯台でした。",
+    refined:
+      "小舟はまだ揺れていたけれど、揺れながら進む道もあるのだと、少しだけ知りました。",
     details: [
-      { id: "future", label: "先のことがこわい", line: "未来はまだ白い紙で、だからこそ大きく見えていました。" },
-      { id: "fail", label: "失敗しそうでこわい", line: "転ぶかもしれない場所を、心は先に照らそうとしていました。" },
-      { id: "near", label: "そばにいてほしい", line: "ひとりで持つには、少し大きな荷物に感じていました。" },
+      {
+        id: "future",
+        label: "先のことがこわい",
+        line: "ほんとうは、まだ白い未来に、そっと線を引いてみたかったのかもしれません。",
+        wish: "見通しがほしいという願い",
+        phrase: "「少しだけ先を照らしたい」",
+      },
+      {
+        id: "fail",
+        label: "失敗しそうでこわい",
+        line: "ほんとうは、大事な一歩をちゃんと踏みたいと思っていたのかもしれません。",
+        wish: "大事に進みたいという願い",
+        phrase: "「ちゃんと進みたいんだ」",
+      },
+      {
+        id: "near",
+        label: "そばにいてほしい",
+        line: "ほんとうは、同じ波を見てくれる誰かを探していたのかもしれません。",
+        wish: "一緒にいてほしいという願い",
+        phrase: "「となりにいてほしい」",
+      },
     ],
   },
   {
@@ -70,14 +159,35 @@ const emotions = [
     label: "なんとなくもやもや",
     mark: "雲",
     color: "#d7eadf",
-    title: "名前のない雲",
-    storyName: "白い雲のまんなかで",
-    phrase: "名前のつかない雲が、胸のあたりにふんわり浮かんでいました",
-    accept: "名前がなくても、その雲はたしかにここにありました。急いで形を決めなくてもよかったのです。",
+    character: "名前のない雲を持った子",
+    storyName: "名前のない雲のまんなかで",
+    rawLine: "名前のつかない雲が、胸のあたりにふんわり浮かんでいました。",
+    translation:
+      "もやもやは、はっきりしないからだめなものではありませんでした。まだ言葉になる前の気持ちが、形を探している途中でした。",
+    refined:
+      "雲はまだ雲のままでした。でもその子は、名前がつく前の気持ちにも居場所を作れました。",
     details: [
-      { id: "unknown", label: "理由がわからない", line: "理由はまだ、土の中の種みたいに眠っていました。" },
-      { id: "stuck", label: "気持ちが動かない", line: "心の時計が、ゆっくり休んでいるようでした。" },
-      { id: "wander", label: "どこにも着かない感じ", line: "どこにも着かない道にも、空を見上げる時間がありました。" },
+      {
+        id: "unknown",
+        label: "理由がわからない",
+        line: "ほんとうは、理由が出てくるまで待ってほしかったのかもしれません。",
+        wish: "急がず待ちたいという願い",
+        phrase: "「まだ名前がなくてもいい」",
+      },
+      {
+        id: "stuck",
+        label: "気持ちが動かない",
+        line: "ほんとうは、動けない自分を責めずに置いておきたかったのかもしれません。",
+        wish: "そのまま置いておける場所",
+        phrase: "「今はここで止まっている」",
+      },
+      {
+        id: "wander",
+        label: "どこにも着かない感じ",
+        line: "ほんとうは、答えよりも、歩いている途中の景色を見たかったのかもしれません。",
+        wish: "途中でいてもいいという許し",
+        phrase: "「まだ途中なんだ」",
+      },
     ],
   },
 ];
@@ -91,8 +201,8 @@ const scenes = [
     className: "forest",
     background: "linear-gradient(#cfe6e2 0 52%, #8fae9a 52% 100%)",
     place: "静かな森",
-    imageLine: "葉っぱは、急がない拍手みたいに、さわさわと揺れていました。",
-    lastLine: "木々のあいだで息をすると、胸の中に小さな道が一本ひらきました。",
+    texture: "葉っぱは、急がない拍手みたいに、さわさわと揺れていました。",
+    breath: "木々のあいだで息をすると、胸の中に小さな道が一本ひらきました。",
   },
   {
     id: "sea",
@@ -102,8 +212,8 @@ const scenes = [
     className: "sea",
     background: "linear-gradient(#34435f 0 58%, #557f96 58% 100%)",
     place: "夜の海",
-    imageLine: "波は、言葉にできない気持ちを、行ったり来たりさせていました。",
-    lastLine: "月の細い光が、息をひとつぶんだけ軽くしてくれました。",
+    texture: "波は、言葉にできない気持ちを、行ったり来たりさせていました。",
+    breath: "月の細い光が、息をひとつぶんだけ軽くしてくれました。",
   },
   {
     id: "room",
@@ -113,8 +223,8 @@ const scenes = [
     className: "room",
     background: "linear-gradient(#f5e4c9 0 68%, #d9b99d 68% 100%)",
     place: "小さな部屋",
-    imageLine: "窓のそばの椅子は、何も言わずにとなりを空けてくれました。",
-    lastLine: "部屋のすみの灯りが、今日のあなたをそのまま照らしていました。",
+    texture: "窓のそばの椅子は、何も言わずにとなりを空けてくれました。",
+    breath: "部屋のすみの灯りが、今日の気持ちをそのまま照らしていました。",
   },
   {
     id: "cloud",
@@ -124,8 +234,8 @@ const scenes = [
     className: "cloud",
     background: "linear-gradient(#cbdff1 0 70%, #efe7f6 70% 100%)",
     place: "雲の上",
-    imageLine: "雲はふかふかで、答えを急がず、ただ体を受けとめました。",
-    lastLine: "遠くの空が少し明るくなり、肩の力がふっとほどけました。",
+    texture: "雲はふかふかで、答えを急がず、ただ体を受けとめました。",
+    breath: "遠くの空が少し明るくなり、肩の力がふっとほどけました。",
   },
 ];
 
@@ -137,11 +247,13 @@ const detailTitle = document.querySelector("#detail-title");
 const storyTitle = document.querySelector("#story-title");
 const storyText = document.querySelector("#story-text");
 const storyIllustration = document.querySelector("#story-illustration");
+const perspectiveBox = document.querySelector("#perspective-box");
 
 function showScreen(id) {
   screens.forEach((screen) => {
     screen.classList.toggle("is-active", screen.id === id);
   });
+  document.querySelector(".phone-shell").scrollTop = 0;
 }
 
 function makeChoice({ label, mark, color }, onClick) {
@@ -163,7 +275,8 @@ function renderEmotions() {
       makeChoice(emotion, () => {
         state.emotion = emotion;
         state.detail = null;
-        detailTitle.textContent = `「${emotion.label}」のそばにあるものは？`;
+        state.scene = null;
+        detailTitle.textContent = `「${emotion.label}」の奥にありそうなものは？`;
         renderDetails();
         showScreen("detail-screen");
       }),
@@ -207,12 +320,15 @@ function renderStory() {
   storyIllustration.style.setProperty("--scene-bg", scene.background);
 
   const paragraphs = [
-    `${scene.place}に、${emotion.title}がいました。${emotion.phrase}。${detail.line}`,
-    `だれもその気持ちを追い出そうとはしませんでした。${emotion.accept} ${scene.imageLine}`,
-    `しばらくすると、${scene.lastLine} その気持ちはまだそこにあったけれど、ひとりぼっちではありませんでした。`,
+    `あんな気持ち、いるかな。${scene.place}に、${emotion.character}がいました。${emotion.rawLine}`,
+    `そこへ、${companions.bird}と${companions.seal}がやってきました。${companions.bird}は言いました。「${emotion.label}って、ここにいるんだね」 ${companions.seal}はうなずいて、「すぐに追い出さなくてもいいよ」と言いました。`,
+    `${detail.line} ${scene.texture} その子は小さな声で、${detail.phrase}と言ってみました。`,
+    `${companions.seal}は言いました。「それは、${detail.wish}なのかもしれないね」 ${companions.bird}も言いました。「気持ちは、困らせるためじゃなくて、知らせるために来ることがあるんだよ」`,
+    `${emotion.translation} ${scene.breath} ${emotion.refined}`,
   ];
 
   storyText.innerHTML = paragraphs.map((text) => `<p>${text}</p>`).join("");
+  perspectiveBox.innerHTML = `<span>R' 新しい見方</span>${emotion.label}は、なくすものではなく、${detail.wish}を知らせる声かもしれません。`;
 }
 
 document.querySelector("[data-start]").addEventListener("click", () => {
