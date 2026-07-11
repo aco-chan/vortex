@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>きもちの絵本</title>
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v=0.5.1" />
   </head>
   <body>
     <main class="phone-shell" aria-live="polite">
@@ -23,7 +23,7 @@
           <p class="eyebrow">feelings picturebook</p>
           <h1>きもちの絵本</h1>
           <p class="subtitle">いまの気持ちに、そっと物語を</p>
-          <p class="version-badge">version v0.5.0 / 2026-07-07</p>
+          <p class="version-badge">version v0.5.1 / 2026-07-11</p>
         </div>
 
         <button class="primary-button" type="button" data-start>はじめる</button>
@@ -105,6 +105,22 @@
       </section>
     </main>
 
-    <script src="script.js"></script>
+    <script src="script.js?v=0.5.1"></script>
+    <script>
+      (() => {
+        const startButton = document.querySelector("[data-start]");
+        const nameScreen = document.querySelector("#name-screen");
+        const appShell = document.querySelector(".phone-shell");
+
+        if (!startButton || !nameScreen) return;
+
+        startButton.addEventListener("click", () => {
+          document.querySelectorAll(".screen").forEach((screen) => {
+            screen.classList.toggle("is-active", screen === nameScreen);
+          });
+          if (appShell) appShell.scrollTop = 0;
+        });
+      })();
+    </script>
   </body>
 </html>

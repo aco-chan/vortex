@@ -6,6 +6,8 @@ const state = {
   scene: null,
 };
 
+window.EmoCompassVersion = "v0.5.1";
+
 const companions = {
   bird: "ぴー",
   seal: "ごまじろう",
