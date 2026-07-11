@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>きもちの絵本</title>
-    <link rel="stylesheet" href="styles.css?v=0.5.1" />
+    <link rel="stylesheet" href="styles.css?v=0.5.2" />
   </head>
   <body>
     <main class="phone-shell" aria-live="polite">
@@ -22,8 +22,8 @@
         <div class="title-copy">
           <p class="eyebrow">feelings picturebook</p>
           <h1>きもちの絵本</h1>
-          <p class="subtitle">いまの気持ちに、そっと物語を</p>
-          <p class="version-badge">version v0.5.1 / 2026-07-11</p>
+          <p class="subtitle">いまの きもちに、そっと ものがたりを</p>
+          <p class="version-badge">version v0.5.2 / 2026-07-11</p>
         </div>
 
         <button class="primary-button" type="button" data-start>はじめる</button>
@@ -32,12 +32,12 @@
       <section class="screen" id="name-screen">
         <header class="screen-header">
           <p class="step-label">Prologue</p>
-          <h2>きょうの主人公の名前は？</h2>
-          <p class="screen-note">物語の中では、選んだ呼び方で登場します。</p>
+          <h2>きょうの しゅじんこうの なまえは？</h2>
+          <p class="screen-note">ものがたりの 中では、えらんだ よびかたで 出てきます。</p>
         </header>
 
         <div class="name-card">
-          <label class="field-label" for="hero-name">名前をいれてね</label>
+          <label class="field-label" for="hero-name">なまえを いれてね</label>
           <input
             class="name-input"
             id="hero-name"
@@ -49,16 +49,16 @@
           />
 
           <fieldset class="suffix-field">
-            <legend>呼び方</legend>
+            <legend>よびかた</legend>
             <div class="suffix-options">
               <label><input type="radio" name="suffix" value="ちゃん" checked />ちゃん</label>
               <label><input type="radio" name="suffix" value="くん" />くん</label>
               <label><input type="radio" name="suffix" value="さん" />さん</label>
-              <label><input type="radio" name="suffix" value="" />呼び捨て</label>
+              <label><input type="radio" name="suffix" value="" />よびすて</label>
             </div>
           </fieldset>
 
-          <p class="name-preview" id="name-preview">あなたちゃんとして物語に出てきます</p>
+          <p class="name-preview" id="name-preview">あなたちゃんとして ものがたりに 出てきます</p>
         </div>
 
         <button class="primary-button" type="button" data-name-next>つぎへ</button>
@@ -68,8 +68,8 @@
       <section class="screen" id="emotion-screen">
         <header class="screen-header">
           <p class="step-label">R: Raw Emotion</p>
-          <h2>まず、いまの気持ちをそのまま選んでね</h2>
-          <p class="screen-note">どの気持ちも、ここにいていいものとして選べます。</p>
+          <h2>まず、いまの きもちを そのまま えらんでね</h2>
+          <p class="screen-note">どの きもちも、ここにいていいものとして えらべます。</p>
         </header>
         <div class="choice-list" id="emotion-list"></div>
       </section>
@@ -77,7 +77,7 @@
       <section class="screen" id="detail-screen">
         <header class="screen-header">
           <p class="step-label">L: Labeling</p>
-          <h2 id="detail-title">その気持ちの奥にありそうなものは？</h2>
+          <h2 id="detail-title">その きもちの おくにありそうなものは？</h2>
         </header>
         <div class="choice-list" id="detail-list"></div>
         <button class="quiet-button" type="button" data-back="emotion-screen">もどる</button>
@@ -86,7 +86,7 @@
       <section class="screen" id="scene-screen">
         <header class="screen-header">
           <p class="step-label">T: Translation</p>
-          <h2>その気持ちを、どんな景色に翻訳する？</h2>
+          <h2>その きもちを、どんな けしきにする？</h2>
         </header>
         <div class="choice-list" id="scene-list"></div>
         <button class="quiet-button" type="button" data-back="detail-screen">もどる</button>
@@ -95,17 +95,17 @@
       <section class="screen" id="story-screen">
         <article class="story-card">
           <div class="story-illustration" id="story-illustration" aria-hidden="true"></div>
-          <p class="story-kicker">あなたのための小さなお話</p>
+          <p class="story-kicker">あなたのための 小さな おはなし</p>
           <h2 id="story-title"></h2>
           <div class="story-text" id="story-text"></div>
           <div class="perspective-box" id="perspective-box"></div>
           <div class="compass-box" id="compass-box"></div>
         </article>
-        <button class="primary-button" type="button" data-reset>もう一度えらぶ</button>
+        <button class="primary-button" type="button" data-reset>さいしょから</button>
       </section>
     </main>
 
-    <script src="script.js?v=0.5.1"></script>
+    <script src="script.js?v=0.5.2"></script>
     <script>
       (() => {
         const startButton = document.querySelector("[data-start]");
