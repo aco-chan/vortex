@@ -5,7 +5,10 @@ const state = {
   detail: null,
 };
 
-window.EmoCompassVersion = "v0.6.1";
+const APP_VERSION = "v0.6.2";
+const APP_VERSION_DATE = "2026-07-11";
+
+window.EmoCompassVersion = APP_VERSION;
 
 const companions = {
   bird: "ぴー",
@@ -537,6 +540,7 @@ const storyTypeData = {
 const screens = [...document.querySelectorAll(".screen")];
 const heroNameInput = document.querySelector("#hero-name");
 const namePreview = document.querySelector("#name-preview");
+const versionBadge = document.querySelector("[data-version-badge]");
 const emotionList = document.querySelector("#emotion-list");
 const detailList = document.querySelector("#detail-list");
 const createStoryButton = document.querySelector("[data-create-story]");
@@ -573,6 +577,11 @@ function updateNamePreview() {
   const suffix = getSelectedSuffix();
   const previewName = enteredName ? `${enteredName}${suffix}` : "しゅじんこう";
   namePreview.textContent = `${previewName}として ものがたりに 出てきます`;
+}
+
+function renderAppVersion() {
+  if (!versionBadge) return;
+  versionBadge.textContent = `version ${APP_VERSION} / ${APP_VERSION_DATE}`;
 }
 
 function showScreen(id) {
@@ -1022,10 +1031,12 @@ document.querySelectorAll('input[name="suffix"]').forEach((input) => {
   input.addEventListener("change", updateNamePreview);
 });
 
+renderAppVersion();
 updateNamePreview();
 renderEmotions();
 
 window.EmoCompassTest = {
+  APP_VERSION,
   state,
   emotions,
   negativeDetails,
