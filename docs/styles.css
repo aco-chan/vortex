@@ -270,6 +270,13 @@ h2 {
   box-shadow: 0 10px 24px rgba(63, 66, 55, 0.08);
 }
 
+.choice-button.is-selected {
+  box-shadow:
+    0 0 0 3px rgba(127, 111, 151, 0.24),
+    0 12px 26px rgba(63, 66, 55, 0.1);
+  background: rgba(255, 255, 255, 0.92);
+}
+
 .choice-button::before {
   content: attr(data-mark);
   width: 42px;
@@ -371,6 +378,13 @@ h2 {
   box-shadow: 0 12px 26px rgba(153, 111, 55, 0.2);
 }
 
+.primary-button:disabled {
+  cursor: default;
+  color: rgba(36, 53, 59, 0.58);
+  background: rgba(241, 199, 132, 0.48);
+  box-shadow: none;
+}
+
 .quiet-button {
   align-self: center;
   min-height: 46px;
@@ -381,13 +395,13 @@ h2 {
 }
 
 .choice-button:hover,
-.primary-button:hover,
+.primary-button:hover:not(:disabled),
 .quiet-button:hover {
   transform: translateY(-1px);
 }
 
 .choice-button:active,
-.primary-button:active,
+.primary-button:active:not(:disabled),
 .quiet-button:active {
   transform: translateY(1px);
 }

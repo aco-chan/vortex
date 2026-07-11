@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>きもちの絵本</title>
-    <link rel="stylesheet" href="styles.css?v=0.6.0" />
+    <link rel="stylesheet" href="styles.css?v=0.6.1" />
   </head>
   <body>
     <main class="phone-shell" aria-live="polite">
@@ -23,7 +23,7 @@
           <p class="eyebrow">feelings picturebook</p>
           <h1>きもちの絵本</h1>
           <p class="subtitle">いまの きもちに、そっと ものがたりを</p>
-          <p class="version-badge">version v0.6.0 / 2026-07-11</p>
+          <p class="version-badge">version v0.6.1 / 2026-07-11</p>
         </div>
 
         <button class="primary-button" type="button" data-start>はじめる</button>
@@ -80,16 +80,10 @@
           <h2 id="detail-title">その きもちの おくにありそうなものは？</h2>
         </header>
         <div class="choice-list" id="detail-list"></div>
+        <button class="primary-button" type="button" data-create-story disabled>
+          おくの きもちを えらんでね
+        </button>
         <button class="quiet-button" type="button" data-back="emotion-screen">もどる</button>
-      </section>
-
-      <section class="screen" id="scene-screen">
-        <header class="screen-header">
-          <p class="step-label">T: Translation</p>
-          <h2>その きもちを、どんな けしきにする？</h2>
-        </header>
-        <div class="choice-list" id="scene-list"></div>
-        <button class="quiet-button" type="button" data-back="detail-screen">もどる</button>
       </section>
 
       <section class="screen" id="story-screen">
@@ -105,7 +99,7 @@
       </section>
     </main>
 
-    <script src="script.js?v=0.6.0"></script>
+    <script src="script.js?v=0.6.1"></script>
     <script>
       (() => {
         const startButton = document.querySelector("[data-start]");

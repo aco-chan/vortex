@@ -3,10 +3,9 @@ const state = {
   suffix: "ちゃん",
   emotion: null,
   detail: null,
-  scene: null,
 };
 
-window.EmoCompassVersion = "v0.6.0";
+window.EmoCompassVersion = "v0.6.1";
 
 const companions = {
   bird: "ぴー",
@@ -214,7 +213,7 @@ const positiveDetails = [
     mark: "おぼえる",
     wish: "わすれたくなかった きもち",
     storyType: "C",
-    compass: "わすれたくない きもちは、心が たいせつにしたい けしきです。",
+    compass: "わすれたくない きもちは、心が たいせつにしたい おぼえです。",
   },
 ];
 
@@ -437,48 +436,55 @@ const emotions = [
   },
 ];
 
-const scenes = [
-  {
-    id: "forest",
-    label: "しずかな森",
-    mark: "き",
-    color: "#d7eadf",
-    className: "forest",
-    background: "linear-gradient(#cfe6e2 0 52%, #8fae9a 52% 100%)",
-    place: "しずかな森",
-    texture: "はっぱが、さわさわと 小さな音を たてていました。",
-  },
-  {
-    id: "sea",
-    label: "よるの海",
-    mark: "なみ",
-    color: "#b7d6df",
-    className: "sea",
-    background: "linear-gradient(#34435f 0 58%, #557f96 58% 100%)",
-    place: "よるの海",
-    texture: "なみが、よせては かえし、ことばにならない きもちを はこんでいました。",
-  },
-  {
-    id: "room",
-    label: "小さなへや",
-    mark: "まど",
-    color: "#f8edda",
+const storyBackdrops = {
+  home: {
     className: "room",
     background: "linear-gradient(#f5e4c9 0 68%, #d9b99d 68% 100%)",
-    place: "小さなへや",
+    place: "おうちの 小さな へや",
     texture: "まどのそばの いすが、なにも 言わずに となりを あけていました。",
   },
-  {
-    id: "cloud",
-    label: "くもの上",
-    mark: "そら",
-    color: "#c7bfdc",
+  morning: {
     className: "cloud",
     background: "linear-gradient(#cbdff1 0 70%, #efe7f6 70% 100%)",
-    place: "くもの上",
-    texture: "くもは ふかふかで、こたえを 急がず、からだを うけとめました。",
+    place: "朝の げんかん",
+    texture: "くつの そばに、朝の 光が うすく たまっていました。",
   },
-];
+  rain: {
+    className: "sea",
+    background: "linear-gradient(#34435f 0 58%, #557f96 58% 100%)",
+    place: "雨あがりの 道",
+    texture: "水たまりが、空の 色を 小さく うつしていました。",
+  },
+  table: {
+    className: "room",
+    background: "linear-gradient(#f5e4c9 0 68%, #d9b99d 68% 100%)",
+    place: "おやつの テーブル",
+    texture: "テーブルの上で、カップの かげが ゆっくり まるく なっていました。",
+  },
+  school: {
+    className: "forest",
+    background: "linear-gradient(#cfe6e2 0 52%, #8fae9a 52% 100%)",
+    place: "学校の すみっこ",
+    texture: "ろうかの 音が、遠くで とん、とん、と ひびいていました。",
+  },
+  work: {
+    className: "forest",
+    background: "linear-gradient(#cfe6e2 0 52%, #8fae9a 52% 100%)",
+    place: "机の まえ",
+    texture: "えんぴつの 先が、紙の上で 小さく こすれる 音を たてました。",
+  },
+};
+
+const priorityBackdropMap = {
+  "angry::understood": "home",
+  "sad::not-alone": "morning",
+  "tired::rest": "home",
+  "happy::share": "rain",
+  "proud::remember": "work",
+  "like::love": "table",
+  "moyamoya::no": "table",
+  "lonely::seen": "school",
+};
 
 const storyTypeData = {
   A: {
@@ -533,7 +539,7 @@ const heroNameInput = document.querySelector("#hero-name");
 const namePreview = document.querySelector("#name-preview");
 const emotionList = document.querySelector("#emotion-list");
 const detailList = document.querySelector("#detail-list");
-const sceneList = document.querySelector("#scene-list");
+const createStoryButton = document.querySelector("[data-create-story]");
 const detailTitle = document.querySelector("#detail-title");
 const storyTitle = document.querySelector("#story-title");
 const storyText = document.querySelector("#story-text");
@@ -588,6 +594,14 @@ function makeChoice({ label, mark, color }, onClick) {
   return button;
 }
 
+function updateCreateStoryButton() {
+  if (!createStoryButton) return;
+  createStoryButton.disabled = !state.detail;
+  createStoryButton.textContent = state.detail
+    ? "おはなしを よんでみる"
+    : "おくの きもちを えらんでね";
+}
+
 function renderChoiceGroups(container, groups, items, onSelect) {
   container.innerHTML = "";
   groups.forEach((group) => {
@@ -614,9 +628,9 @@ function renderEmotions() {
   renderChoiceGroups(emotionList, emotionGroups, emotions, (emotion) => {
     state.emotion = emotion;
     state.detail = null;
-    state.scene = null;
     detailTitle.textContent = `「${emotion.label}」の おくにありそうなものは？`;
     renderDetails();
+    updateCreateStoryButton();
     showScreen("detail-screen");
   });
 }
@@ -625,27 +639,17 @@ function renderDetails() {
   detailList.innerHTML = "";
   const details = state.emotion.type === "positive" ? positiveDetails : negativeDetails;
   details.forEach((detail) => {
-    detailList.append(
-      makeChoice({ ...detail, color: state.emotion.color }, () => {
-        state.detail = detail;
-        renderScenes();
-        showScreen("scene-screen");
-      }),
-    );
+    const button = makeChoice({ ...detail, color: state.emotion.color }, () => {
+      state.detail = detail;
+      renderDetails();
+      updateCreateStoryButton();
+    });
+    const isSelected = state.detail?.id === detail.id;
+    button.classList.toggle("is-selected", isSelected);
+    button.setAttribute("aria-pressed", String(isSelected));
+    detailList.append(button);
   });
-}
-
-function renderScenes() {
-  sceneList.innerHTML = "";
-  scenes.forEach((scene) => {
-    sceneList.append(
-      makeChoice(scene, () => {
-        state.scene = scene;
-        renderStory();
-        showScreen("story-screen");
-      }),
-    );
-  });
+  updateCreateStoryButton();
 }
 
 function storyKey(emotion, detail) {
@@ -656,12 +660,25 @@ function chooseStoryType(emotion, detail) {
   return detail.storyType || emotion.storyType || (emotion.type === "positive" ? "C" : "A");
 }
 
+function chooseBackdrop(emotion, detail) {
+  const mappedKey = priorityBackdropMap[storyKey(emotion, detail)];
+  if (mappedKey && storyBackdrops[mappedKey]) return storyBackdrops[mappedKey];
+
+  const storyType = chooseStoryType(emotion, detail);
+  if (storyType === "C") return storyBackdrops.rain;
+  if (storyType === "D") return storyBackdrops.home;
+  if (storyType === "G") return storyBackdrops.table;
+  if (storyType === "F") return storyBackdrops.table;
+  if (emotion.id === "lonely" || emotion.id === "alone") return storyBackdrops.school;
+  return storyBackdrops.home;
+}
+
 function createStory({ title, paragraphs, strength, compass }) {
   return { title, paragraphs, strength, compass };
 }
 
 const priorityStoryBuilders = {
-  "angry::understood": ({ name, scene }) =>
+  "angry::understood": ({ name, backdrop }) =>
     createStory({
       title: `おこりんぼうの ${name}`,
       paragraphs: [
@@ -680,14 +697,14 @@ const priorityStoryBuilders = {
         `その夜、${name}は だいじな人に 言いました。`,
         `「ほんとうは、わかってほしかったんだよ」`,
         `そのことばを 言ったら、ぷんぷんの おくから、かなしい しずくが ひとつ 出てきました。`,
-        `${scene.texture}`,
+        `${backdrop.texture}`,
         `ほんとうに ${name}って、おこっても、その おくの きもちを ことばに できる子なんですね。`,
       ],
       strength: `${name}は、おこりを なくすだけではなく、その おくにある「わかってほしい」を 見つけました。`,
       compass: "おこる きもちの下に、見てほしい こえが かくれている日もあります。",
     }),
 
-  "sad::not-alone": ({ name, scene }) =>
+  "sad::not-alone": ({ name, backdrop }) =>
     createStory({
       title: `なみだの日の ${name}`,
       paragraphs: [
@@ -705,14 +722,14 @@ const priorityStoryBuilders = {
         `帰り道、手を つないだ とき、${name}は「きょう、ちょっと さみしかった」と 言えました。`,
         `ぴーは 羽を たたんで、うれしそうに うなずきました。`,
         `ごまじろうは「言えたね。となりに いてほしいって、だいじな こえだね」と 言いました。`,
-        `${scene.texture}`,
+        `${backdrop.texture}`,
         `ほんとうに ${name}って、なみだの あとにも、小さな ひかりを 見つけられる子なんですね。`,
       ],
       strength: `${name}は、さみしさを 消さないまま、となりに いてほしい こえを 少しだけ 出せました。`,
       compass: "なみだが 出る日も、心は ひかりを 見つける 力を なくしていません。",
     }),
 
-  "tired::rest": ({ name, scene }) =>
+  "tired::rest": ({ name, backdrop }) =>
     createStory({
       title: `やすみたい日の ${name}`,
       paragraphs: [
@@ -730,14 +747,14 @@ const priorityStoryBuilders = {
         `夕方、${name}は ぴーに「まだ ねむい」と 言いました。`,
         `ぴーは「まだ ねむいも、ほんとうだね」と 言いました。`,
         `ごまじろうは、ふかふかの タオルを そっと そばに 置きました。`,
-        `${scene.texture}`,
+        `${backdrop.texture}`,
         `ほんとうに ${name}って、まじめだけど、からだと 心の こえを 聞いて やすめる子なんですね。`,
       ],
       strength: `${name}は、がんばりを すてたのではなく、がんばってきた からだの こえを 聞きました。`,
       compass: "やすむことは、ここまでの がんばりを たいせつに することでもあります。",
     }),
 
-  "happy::share": ({ name, scene }) =>
+  "happy::share": ({ name, backdrop }) =>
     createStory({
       title: `うれしいを 見つける ${name}`,
       paragraphs: [
@@ -754,14 +771,14 @@ const priorityStoryBuilders = {
         `うれしいは、大きな 音を 立てずに、みんなの 間へ ひろがりました。`,
         `ぴーは「わけても へらないんだね」と 言いました。`,
         `ごまじろうは「むしろ、見える人が ふえたみたい」と にっこり しました。`,
-        `${scene.texture}`,
+        `${backdrop.texture}`,
         `ほんとうに ${name}って、世界の中から よろこびを 見つけて、そっと わかちあえる子なんですね。`,
       ],
       strength: `${name}は、うれしいを 大きく さわぐだけではなく、だれかと そっと 見られる ひかりに できました。`,
       compass: "うれしい きもちは、だれかと わけても 小さくならない あかりです。",
     }),
 
-  "proud::remember": ({ name, scene }) =>
+  "proud::remember": ({ name, backdrop }) =>
     createStory({
       title: `小さな はたを 立てた ${name}`,
       paragraphs: [
@@ -779,14 +796,14 @@ const priorityStoryBuilders = {
         `${name}は、その箱に きょうの できたを そっと 入れました。`,
         `だれかに じまんするためでは ありません。`,
         `じぶんが 歩いた みちを、じぶんで 忘れないためです。`,
-        `${scene.texture}`,
+        `${backdrop.texture}`,
         `ほんとうに ${name}って、小さな できたを、たからもののように おぼえておける子なんですね。`,
       ],
       strength: `${name}は、ほこらしさを ひけらかさず、じぶんの中の 小さな はたとして しまえました。`,
       compass: "できたことを、きょうは ちゃんと おぼえておこう。",
     }),
 
-  "like::love": ({ name, scene }) =>
+  "like::love": ({ name, backdrop }) =>
     createStory({
       title: `${name}の すきの 花`,
       paragraphs: [
@@ -803,14 +820,14 @@ const priorityStoryBuilders = {
         `だいじな人に その絵を 見せると、「あたたかい 絵だね」と 言ってくれました。`,
         `${name}は、すきの ぜんぶを 言えたわけでは ありません。`,
         `でも、花びら 一まいぶんは、ちゃんと とどいた気がしました。`,
-        `${scene.texture}`,
+        `${backdrop.texture}`,
         `ほんとうに ${name}って、すきな きもちを、じぶんの 速さで たいせつに つたえられる子なんですね。`,
       ],
       strength: `${name}は、すきを 急がず、絵や しぐさの中にも たいせつな きもちを のせられました。`,
       compass: "すきと 思えた きもちは、心の中に 咲いた 小さな 花です。",
     }),
 
-  "moyamoya::no": ({ name, scene }) =>
+  "moyamoya::no": ({ name, backdrop }) =>
     createStory({
       title: `${name}の もやもやと 小さな いや`,
       paragraphs: [
@@ -828,14 +845,14 @@ const priorityStoryBuilders = {
         `まわりの人は すぐに ぜんぶ わかったわけでは ありません。`,
         `でも、「そっか」と 聞いてくれました。`,
         `${name}の もやもやは、すこしだけ 形を もらいました。`,
-        `${scene.texture}`,
+        `${backdrop.texture}`,
         `ほんとうに ${name}って、やさしさの中にも、じぶんの「いや」と「これがいい」を 見つけられる子なんですね。`,
       ],
       strength: `${name}は、人に 合わせる やさしさを 持ったまま、じぶんの こえも 少し 出せました。`,
       compass: "いやだと 言うことは、じぶんと だれかの 間に 小さな 線を 引くことです。",
     }),
 
-  "lonely::seen": ({ name, scene }) =>
+  "lonely::seen": ({ name, backdrop }) =>
     createStory({
       title: `${name}の みてほしい日`,
       paragraphs: [
@@ -853,7 +870,7 @@ const priorityStoryBuilders = {
         `ぴーは「いま、少し 風が 入ったね」と 言いました。`,
         `ごまじろうは「好きに なるとか、ぜんぶ 仲よくなるとか、急がなくて いいね」と 言いました。`,
         `${name}は、まだ すみっこに いたけれど、さっきより 少し 顔を 上げました。`,
-        `${scene.texture}`,
+        `${backdrop.texture}`,
         `ほんとうに ${name}って、さみしい きもちの中でも、見てほしい こえを 大事に できる子なんですね。`,
       ],
       strength: `${name}は、すぐに 明るく ならなくても、「見てほしい」を 心の中で なくしませんでした。`,
@@ -861,7 +878,7 @@ const priorityStoryBuilders = {
     }),
 };
 
-function buildGenericStory({ name, emotion, detail, scene }) {
+function buildGenericStory({ name, emotion, detail, backdrop }) {
   const storyType = chooseStoryType(emotion, detail);
   const type = storyTypeData[storyType] || storyTypeData.A;
   const isPositive = emotion.type === "positive";
@@ -870,7 +887,7 @@ function buildGenericStory({ name, emotion, detail, scene }) {
     ? `${name}は、その日、「${emotion.label}」という きもちを 小さな たからものみたいに 持っていました。`
     : `${name}は、その日、「${emotion.label}」という きもちを からだの どこかで 感じていました。`;
 
-  const sceneLine =
+  const dailyLine =
     storyType === "C"
       ? `朝の 光や、足もとの 音や、手の中の ぬくもりが、いつもより 少し はっきり 見えました。`
       : `いつもの 場所にいるのに、まわりの 音が 少し 遠くなったり、近くなったりしました。`;
@@ -912,16 +929,16 @@ function buildGenericStory({ name, emotion, detail, scene }) {
     title: type.title(name, emotion),
     paragraphs: [
       opening,
-      sceneLine,
+      dailyLine,
       `そこへ、ことりの ぴーと ごまあざらしの ごまじろうが やってきました。`,
       `ぴーは「その きもち、ここに いても いい気がする」と 言いました。`,
       dialogue,
       `${name}は、すぐに こたえを 出しませんでした。`,
       `でも、むねの中で 何かが 少しだけ うごきました。`,
       turn,
-      `${scene.place}の けしきが、心の中に ひろがりました。`,
-      `${scene.texture}`,
-      `${companions.bird}と ${companions.seal}は、答えを きめずに、となりで その けしきを 見ていました。`,
+      `${backdrop.place}の 空気が、心の中に ひろがりました。`,
+      `${backdrop.texture}`,
+      `${companions.bird}と ${companions.seal}は、答えを きめずに、となりで その 場面を 見ていました。`,
       ending,
     ],
     strength: `${name}は、「${emotion.label}」の中にある「${detail.label}」を、少しずつ 見つめました。`,
@@ -932,24 +949,24 @@ function buildGenericStory({ name, emotion, detail, scene }) {
 function buildStory() {
   const emotion = state.emotion;
   const detail = state.detail;
-  const scene = state.scene;
+  const backdrop = chooseBackdrop(emotion, detail);
   const name = getDisplayName();
   const builder = priorityStoryBuilders[storyKey(emotion, detail)];
 
   if (builder) {
-    return builder({ name, emotion, detail, scene });
+    return builder({ name, emotion, detail, backdrop });
   }
 
-  return buildGenericStory({ name, emotion, detail, scene });
+  return buildGenericStory({ name, emotion, detail, backdrop });
 }
 
 function renderStory() {
   const story = buildStory();
-  const scene = state.scene;
+  const backdrop = chooseBackdrop(state.emotion, state.detail);
 
   storyTitle.textContent = story.title;
-  storyIllustration.className = `story-illustration ${scene.className}`;
-  storyIllustration.style.setProperty("--scene-bg", scene.background);
+  storyIllustration.className = `story-illustration ${backdrop.className}`;
+  storyIllustration.style.setProperty("--scene-bg", backdrop.background);
   storyText.innerHTML = story.paragraphs.map((text) => `<p>${escapeHtml(text)}</p>`).join("");
   perspectiveBox.innerHTML = `<span>見つけた ちから</span>${escapeHtml(story.strength)}`;
   compassBox.innerHTML = `<span>きょうのコンパス</span>${escapeHtml(story.compass)}`;
@@ -963,7 +980,16 @@ document.querySelector("[data-start]").addEventListener("click", () => {
 document.querySelector("[data-name-next]").addEventListener("click", () => {
   state.name = heroNameInput.value.trim();
   state.suffix = getSelectedSuffix();
+  state.emotion = null;
+  state.detail = null;
+  updateCreateStoryButton();
   showScreen("emotion-screen");
+});
+
+createStoryButton.addEventListener("click", () => {
+  if (!state.emotion || !state.detail) return;
+  renderStory();
+  showScreen("story-screen");
 });
 
 document.querySelector("[data-reset]").addEventListener("click", () => {
@@ -971,15 +997,19 @@ document.querySelector("[data-reset]").addEventListener("click", () => {
   state.suffix = "ちゃん";
   state.emotion = null;
   state.detail = null;
-  state.scene = null;
   heroNameInput.value = "";
   document.querySelector('input[name="suffix"][value="ちゃん"]').checked = true;
   updateNamePreview();
+  updateCreateStoryButton();
   showScreen("title-screen");
 });
 
 document.querySelectorAll("[data-back]").forEach((button) => {
   button.addEventListener("click", () => {
+    if (button.dataset.back === "emotion-screen") {
+      state.detail = null;
+      updateCreateStoryButton();
+    }
     showScreen(button.dataset.back);
   });
 });
@@ -997,7 +1027,7 @@ window.EmoCompassTest = {
   emotions,
   negativeDetails,
   positiveDetails,
-  scenes,
+  storyBackdrops,
   getDisplayName,
   renderStory,
   showScreen,
