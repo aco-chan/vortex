@@ -296,7 +296,8 @@ h2 {
   line-height: 1.4;
 }
 
-.name-card {
+.name-card,
+.event-card {
   display: grid;
   gap: 16px;
   padding: 18px;
@@ -324,9 +325,48 @@ h2 {
   background: rgba(255, 250, 240, 0.82);
 }
 
-.name-input:focus {
+.event-input {
+  width: 100%;
+  min-height: 132px;
+  padding: 14px 16px;
+  border: 2px solid rgba(48, 66, 74, 0.12);
+  border-radius: 8px;
+  resize: vertical;
+  color: var(--ink);
+  font: inherit;
+  font-size: 1.04rem;
+  line-height: 1.65;
+  background: rgba(255, 250, 240, 0.82);
+}
+
+.name-input:focus,
+.event-input:focus {
   border-color: rgba(127, 111, 151, 0.5);
   outline: 0;
+}
+
+.event-examples {
+  padding: 12px 14px;
+  border-radius: 8px;
+  color: #647176;
+  font-size: 0.88rem;
+  line-height: 1.65;
+  background: rgba(215, 234, 223, 0.42);
+}
+
+.event-examples p {
+  margin: 0 0 6px;
+  color: #7f6f97;
+  font-weight: 800;
+}
+
+.event-examples ul {
+  margin: 0;
+  padding-left: 1.2em;
+}
+
+.event-examples li + li {
+  margin-top: 2px;
 }
 
 .suffix-field {

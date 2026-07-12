@@ -1,12 +1,13 @@
 const state = {
   name: "",
   suffix: "ちゃん",
+  eventText: "",
   emotion: null,
   detail: null,
 };
 
-const APP_VERSION = "v0.6.2";
-const APP_VERSION_DATE = "2026-07-11";
+const APP_VERSION = "v0.6.3";
+const APP_VERSION_DATE = "2026-07-12";
 
 window.EmoCompassVersion = APP_VERSION;
 
@@ -540,6 +541,7 @@ const storyTypeData = {
 const screens = [...document.querySelectorAll(".screen")];
 const heroNameInput = document.querySelector("#hero-name");
 const namePreview = document.querySelector("#name-preview");
+const eventTextInput = document.querySelector("#event-text");
 const versionBadge = document.querySelector("[data-version-badge]");
 const emotionList = document.querySelector("#emotion-list");
 const detailList = document.querySelector("#detail-list");
@@ -582,6 +584,185 @@ function updateNamePreview() {
 function renderAppVersion() {
   if (!versionBadge) return;
   versionBadge.textContent = `version ${APP_VERSION} / ${APP_VERSION_DATE}`;
+}
+
+function normalizeEventText(value) {
+  return String(value || "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function getEventText() {
+  return normalizeEventText(eventTextInput?.value);
+}
+
+function detectEventActor(text) {
+  const actorRules = [
+    { label: "ママ", patterns: ["ママ", "お母さん", "母"] },
+    { label: "パパ", patterns: ["パパ", "お父さん", "父"] },
+    { label: "先生", patterns: ["先生", "せんせい"] },
+    { label: "おともだち", patterns: ["おともだち", "お友だち", "友だち", "友達"] },
+    { label: "おねえちゃん", patterns: ["おねえちゃん", "お姉ちゃん", "姉"] },
+    { label: "おにいちゃん", patterns: ["おにいちゃん", "お兄ちゃん", "兄"] },
+    { label: "いもうと", patterns: ["いもうと", "妹"] },
+    { label: "おとうと", patterns: ["おとうと", "弟"] },
+  ];
+
+  return actorRules.find((rule) => rule.patterns.some((pattern) => text.includes(pattern)))?.label || "";
+}
+
+function makeEventScene(name, eventText) {
+  const text = normalizeEventText(eventText);
+  if (!text) return null;
+
+  const actor = detectEventActor(text);
+
+  if (text.includes("つみき") || text.includes("積み木")) {
+    return {
+      kind: "blocks",
+      actor,
+      wanted: "あとひとつでできるところを見てほしかった",
+      opening: [
+        `${name}は、夕方、つみきで小さなおうちを作っていました。`,
+        `あとひとつ屋根をのせたら、できあがりです。`,
+        actor
+          ? `そのとき、${actor}が「そろそろかたづけようね」と言いました。`
+          : `そのとき、「そろそろかたづけようね」と声がしました。`,
+      ],
+    };
+  }
+
+  if (text.includes("話") && (text.includes("聞") || text.includes("きい"))) {
+    return {
+      kind: "talk",
+      actor,
+      wanted: "話をさいごまで聞いてほしかった",
+      opening: [
+        actor
+          ? `${name}は、${actor}に、きょうあったことを話していました。`
+          : `${name}は、きょうあったことを話そうとしていました。`,
+        actor
+          ? `でも、${actor}は別の話をはじめてしまいました。`
+          : `でも、話はさいごまで届かないままになりました。`,
+      ],
+    };
+  }
+
+  if ((text.includes("おもちゃ") || text.includes("玩具")) && (text.includes("とら") || text.includes("取ら"))) {
+    return {
+      kind: "toy",
+      actor,
+      wanted: "使っていたことを見てほしかった",
+      opening: [
+        `${name}は、おうちでおもちゃを使っていました。`,
+        actor
+          ? `すると、${actor}がそのおもちゃを持っていってしまいました。`
+          : `すると、そのおもちゃが別のところへ行ってしまいました。`,
+      ],
+    };
+  }
+
+  if (text.includes("できな") || text.includes("くやし")) {
+    return {
+      kind: "could-not",
+      actor,
+      wanted: "がんばっていたところを見てほしかった",
+      opening: [
+        `${name}は、できるようになりたくて、もう一度やってみました。`,
+        `でも、その日は思ったようにうまくいきませんでした。`,
+      ],
+    };
+  }
+
+  if (text.includes("うれし") || text.includes("楽しか") || text.includes("たのし")) {
+    return {
+      kind: "warm",
+      actor,
+      wanted: "この気もちをいっしょに見てほしかった",
+      opening: [
+        `${name}には、きょう、心に残ることがありました。`,
+        actor
+          ? `${actor}にも話したくなるような、あたたかいできごとでした。`
+          : `あとで思い出しても、胸のあたりが少し明るくなるできごとでした。`,
+      ],
+    };
+  }
+
+  return {
+    kind: "general",
+    actor,
+    wanted: actor ? `${actor}に見てほしかった` : "そのことをわかってほしかった",
+    opening: [
+      actor
+        ? `${name}は、${actor}といるときに、心に残ることがありました。`
+        : `${name}には、きょう、心に残ることがありました。`,
+      `そのことは、すぐにはうまく言えないけれど、胸の中に残っていました。`,
+    ],
+  };
+}
+
+function makeEventResponseLines(name, eventScene) {
+  if (!eventScene?.actor) {
+    return [
+      `その夜、ふとんの中で、${name}は小さく言いました。`,
+      `「ほんとうは、${eventScene?.wanted || "わかってほしかった"}の」`,
+    ];
+  }
+
+  const actor = eventScene.actor;
+  const timing =
+    actor === "先生"
+      ? `あとで、${actor}が「さっき、どうしておこったの？」と聞きました。`
+      : actor === "おともだち"
+        ? `少しあとで、${actor}が「さっき、どうしたの？」と聞きました。`
+        : `その夜、ふとんの中で、${actor}が「さっき、どうしてあんなにおこったの？」と聞きました。`;
+
+  return [
+    timing,
+    `${name}は、しばらくだまってから、「${eventScene.wanted}の」と言いました。`,
+    `それから、小さな声で「すぐには言えなかったけど、かなしくなった」とつけたしました。`,
+    `${actor}は、${name}のそばで「そうだったんだね。教えてくれてありがとう」と言いました。`,
+  ];
+}
+
+function makeAngerBodyLines(name, eventScene) {
+  if (!eventScene || eventScene.kind === "blocks") {
+    return [
+      `${name}の手は、つみきをぎゅっとにぎったままとまりました。`,
+      `「いまじゃない！」という声が、思ったより大きく出ました。`,
+      `つみきのはこをばたんとしめると、むねの中でぷんぷんがぱちぱちしました。`,
+    ];
+  }
+
+  if (eventScene.kind === "talk") {
+    return [
+      `${name}の口は、話の途中でとまりました。`,
+      `「まだ聞いてほしかったのに」という声が、胸の中で大きくなりました。`,
+      `むねの中で、ぷんぷんがぱちぱちしました。`,
+    ];
+  }
+
+  if (eventScene.kind === "toy") {
+    return [
+      `${name}の手は、空っぽになった場所でぎゅっと止まりました。`,
+      `「いま使ってたのに！」という声が、思ったより大きく出ました。`,
+      `むねの中で、ぷんぷんがぱちぱちしました。`,
+    ];
+  }
+
+  if (eventScene.kind === "could-not") {
+    return [
+      `${name}は、もう一度やりたいのに、手がぎゅっとかたまりました。`,
+      `「できない！」という声が、思ったより大きく出ました。`,
+      `むねの中で、ぷんぷんがぱちぱちしました。`,
+    ];
+  }
+
+  return [
+    `${name}は、うまく言えないまま、手をぎゅっとにぎりました。`,
+    `「いやだ！」という声が、思ったより大きく出ました。`,
+    `むねの中で、ぷんぷんがぱちぱちしました。`,
+  ];
 }
 
 function showScreen(id) {
@@ -686,17 +867,41 @@ function createStory({ title, paragraphs, strength, compass }) {
   return { title, paragraphs, strength, compass };
 }
 
+function withEventScene(story, eventScene) {
+  if (!eventScene) return story;
+
+  return {
+    ...story,
+    paragraphs: [
+      ...eventScene.opening,
+      `そのあとも、そのことは胸の中に少し残っていました。`,
+      ...story.paragraphs,
+    ],
+  };
+}
+
 const priorityStoryBuilders = {
-  "angry::understood": ({ name, backdrop }) =>
-    createStory({
+  "angry::understood": ({ name, backdrop, eventScene }) => {
+    const opening = eventScene?.opening || [
+      `${name}は、夕方、つみきで小さなおうちを作っていました。`,
+      `さいごの屋根をのせたら、できあがりです。`,
+      `そのとき、ママが「そろそろかたづけようね」と言いました。`,
+    ];
+    const angerBody = makeAngerBodyLines(name, eventScene);
+    const responseLines = eventScene
+      ? makeEventResponseLines(name, eventScene)
+      : [
+          `その夜、ふとんの中で、ママが「さっき、どうしてあんなにおこったの？」と聞きました。`,
+          `${name}は、しばらくだまってから、「あとひとつでできたの。見てほしかったの」と言いました。`,
+          `それから、小さな声で「すぐやめてって言われて、かなしくなった」とつけたしました。`,
+          `ママは、${name}のそばにすわって、「そうだったんだね。教えてくれてありがとう。あとひとつだったんだね」と言いました。`,
+        ];
+
+    return createStory({
       title: `おこりんぼうの ${name}`,
       paragraphs: [
-        `${name}は、夕方、つみきで小さなおうちを作っていました。`,
-        `さいごの屋根をのせたら、できあがりです。`,
-        `そのとき、ママが「そろそろかたづけようね」と言いました。`,
-        `${name}の手は、つみきをぎゅっとにぎったままとまりました。`,
-        `「いまじゃない！」という声が、思ったより大きく出ました。`,
-        `つみきのはこをばたんとしめると、むねの中でぷんぷんがぱちぱちしました。`,
+        ...opening,
+        ...angerBody,
         `そこへ、ことりのぴーと、ごまあざらしのごまじろうがやってきました。`,
         `ぴーは「${name}、まだぷんぷんしてる？」と聞きました。`,
         `${name}は「してる」と言って、ほっぺをふくらませました。`,
@@ -704,17 +909,15 @@ const priorityStoryBuilders = {
         `${name}は、ふーっといきをはきました。`,
         `でも、ぷんぷんはまだからだの中に残っていました。`,
         `ごまじろうは「まだあるんだね」と言って、となりにすわりました。`,
-        `その夜、ふとんの中で、ママが「さっき、どうしてあんなにおこったの？」と聞きました。`,
-        `${name}は、しばらくだまってから、「あとひとつでできたの。見てほしかったの」と言いました。`,
-        `それから、小さな声で「すぐやめてって言われて、かなしくなった」とつけたしました。`,
-        `ママは、${name}のそばにすわって、「そうだったんだね。教えてくれてありがとう。あとひとつだったんだね」と言いました。`,
+        ...responseLines,
         `${name}の目に、なみだがひとつたまりました。ぷんぷんした気もちは、まだ少し残っていました。`,
         `でも、そのとなりには、かなしかった気もちもちゃんといました。`,
         `ほんとうに${name}って、「見てほしかった」という気もちを、ちゃんと言葉にできる子なんですね。`,
       ],
       strength: `${name}は、ぷんぷんをぜんぶ消さなくても、その奥にあった「見てほしかった」を言葉にできました。`,
       compass: "おこる きもちの下に、見てほしかった こえが かくれている日もあります。",
-    }),
+    });
+  },
 
   "sad::not-alone": ({ name, backdrop }) =>
     createStory({
@@ -890,14 +1093,16 @@ const priorityStoryBuilders = {
     }),
 };
 
-function buildGenericStory({ name, emotion, detail, backdrop }) {
+function buildGenericStory({ name, emotion, detail, backdrop, eventScene }) {
   const storyType = chooseStoryType(emotion, detail);
   const type = storyTypeData[storyType] || storyTypeData.A;
   const isPositive = emotion.type === "positive";
 
-  const opening = isPositive
-    ? `${name}は、その日、「${emotion.label}」という きもちを 小さな たからものみたいに 持っていました。`
-    : `${name}は、その日、「${emotion.label}」という きもちを からだの どこかで 感じていました。`;
+  const openingParagraphs = eventScene?.opening || [
+    isPositive
+      ? `${name}は、その日、「${emotion.label}」という きもちを 小さな たからものみたいに 持っていました。`
+      : `${name}は、その日、「${emotion.label}」という きもちを からだの どこかで 感じていました。`,
+  ];
 
   const dailyLine =
     storyType === "C"
@@ -940,7 +1145,7 @@ function buildGenericStory({ name, emotion, detail, backdrop }) {
   return createStory({
     title: type.title(name, emotion),
     paragraphs: [
-      opening,
+      ...openingParagraphs,
       dailyLine,
       `そこへ、ことりの ぴーと ごまあざらしの ごまじろうが やってきました。`,
       `ぴーは「その きもち、ここに いても いい気がする」と 言いました。`,
@@ -963,13 +1168,17 @@ function buildStory() {
   const detail = state.detail;
   const backdrop = chooseBackdrop(emotion, detail);
   const name = getDisplayName();
+  const eventScene = makeEventScene(name, state.eventText);
   const builder = priorityStoryBuilders[storyKey(emotion, detail)];
 
   if (builder) {
-    return builder({ name, emotion, detail, backdrop });
+    const story = builder({ name, emotion, detail, backdrop, eventScene });
+    return storyKey(emotion, detail) === "angry::understood"
+      ? story
+      : withEventScene(story, eventScene);
   }
 
-  return buildGenericStory({ name, emotion, detail, backdrop });
+  return buildGenericStory({ name, emotion, detail, backdrop, eventScene });
 }
 
 function renderStory() {
@@ -992,6 +1201,16 @@ document.querySelector("[data-start]").addEventListener("click", () => {
 document.querySelector("[data-name-next]").addEventListener("click", () => {
   state.name = heroNameInput.value.trim();
   state.suffix = getSelectedSuffix();
+  state.eventText = getEventText();
+  state.emotion = null;
+  state.detail = null;
+  updateCreateStoryButton();
+  showScreen("event-screen");
+  eventTextInput?.focus();
+});
+
+document.querySelector("[data-event-next]").addEventListener("click", () => {
+  state.eventText = getEventText();
   state.emotion = null;
   state.detail = null;
   updateCreateStoryButton();
@@ -1000,6 +1219,7 @@ document.querySelector("[data-name-next]").addEventListener("click", () => {
 
 createStoryButton.addEventListener("click", () => {
   if (!state.emotion || !state.detail) return;
+  state.eventText = getEventText();
   renderStory();
   showScreen("story-screen");
 });
@@ -1007,9 +1227,11 @@ createStoryButton.addEventListener("click", () => {
 document.querySelector("[data-reset]").addEventListener("click", () => {
   state.name = "";
   state.suffix = "ちゃん";
+  state.eventText = "";
   state.emotion = null;
   state.detail = null;
   heroNameInput.value = "";
+  if (eventTextInput) eventTextInput.value = "";
   document.querySelector('input[name="suffix"][value="ちゃん"]').checked = true;
   updateNamePreview();
   updateCreateStoryButton();
@@ -1027,6 +1249,9 @@ document.querySelectorAll("[data-back]").forEach((button) => {
 });
 
 heroNameInput.addEventListener("input", updateNamePreview);
+eventTextInput?.addEventListener("input", () => {
+  state.eventText = getEventText();
+});
 document.querySelectorAll('input[name="suffix"]').forEach((input) => {
   input.addEventListener("change", updateNamePreview);
 });

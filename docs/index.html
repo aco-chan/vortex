@@ -65,6 +65,41 @@
         <button class="quiet-button" type="button" data-back="title-screen">もどる</button>
       </section>
 
+      <section class="screen" id="event-screen">
+        <header class="screen-header">
+          <p class="step-label">Episode</p>
+          <h2>きょう、どんなことがあった？</h2>
+          <p class="screen-note">
+            みじかく書いてみてね。<br />
+            まだ書きたくないときは、そのまま進んでもだいじょうぶです。
+          </p>
+        </header>
+
+        <div class="event-card">
+          <label class="field-label" for="event-text">きょうのこと</label>
+          <textarea
+            class="event-input"
+            id="event-text"
+            rows="4"
+            maxlength="140"
+            placeholder="例：ママに かたづけてと 言われた&#10;例：おともだちに 話をきいてもらえなかった"
+          ></textarea>
+          <div class="event-examples" aria-label="入力例">
+            <p>たとえば</p>
+            <ul>
+              <li>ママに かたづけてと 言われた</li>
+              <li>おともだちに 話をきいてもらえなかった</li>
+              <li>いもうとに おもちゃを とられた</li>
+              <li>できなかったことが くやしかった</li>
+              <li>うれしいことが あった</li>
+            </ul>
+          </div>
+        </div>
+
+        <button class="primary-button" type="button" data-event-next>つぎへ</button>
+        <button class="quiet-button" type="button" data-back="name-screen">もどる</button>
+      </section>
+
       <section class="screen" id="emotion-screen">
         <header class="screen-header">
           <p class="step-label">R: Raw Emotion</p>
@@ -72,6 +107,7 @@
           <p class="screen-note">どの きもちも、ここにいていいものとして えらべます。</p>
         </header>
         <div class="choice-list" id="emotion-list"></div>
+        <button class="quiet-button" type="button" data-back="event-screen">もどる</button>
       </section>
 
       <section class="screen" id="detail-screen">
