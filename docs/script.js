@@ -6,7 +6,7 @@ const state = {
   detail: null,
 };
 
-const APP_VERSION = "v0.6.3";
+const APP_VERSION = "v0.6.4";
 const APP_VERSION_DATE = "2026-07-12";
 
 window.EmoCompassVersion = APP_VERSION;
@@ -850,6 +850,42 @@ function chooseStoryType(emotion, detail) {
   return detail.storyType || emotion.storyType || (emotion.type === "positive" ? "C" : "A");
 }
 
+function getStoryFamily(emotion, detail) {
+  const familyByEmotion = {
+    angry: "anger",
+    irritated: "anger",
+    frustrated: "anger",
+    moyamoya: "anger",
+    sad: "sadness",
+    lonely: "sadness",
+    alone: "sadness",
+    "hidden-sad": "sadness",
+    anxious: "anxiety",
+    scared: "anxiety",
+    tired: "tired",
+    "cant-anymore": "tired",
+    happy: "joy",
+    relieved: "joy",
+    hottoshiteiru: "joy",
+    warm: "joy",
+    thanks: "joy",
+    like: "joy",
+    fun: "growth",
+    excited: "growth",
+    proud: "growth",
+    done: "growth",
+    try: "growth",
+    cherish: "growth",
+  };
+  const familyByDetail = {
+    "no-fail": "anxiety",
+    rest: "tired",
+    "too-hard": "tired",
+  };
+
+  return familyByDetail[detail.id] || familyByEmotion[emotion.id] || "anger";
+}
+
 function chooseBackdrop(emotion, detail) {
   const mappedKey = priorityBackdropMap[storyKey(emotion, detail)];
   if (mappedKey && storyBackdrops[mappedKey]) return storyBackdrops[mappedKey];
@@ -867,14 +903,22 @@ function createStory({ title, paragraphs, strength, compass }) {
   return { title, paragraphs, strength, compass };
 }
 
-function withEventScene(story, eventScene) {
+function withEventScene(story, eventScene, family = "anger") {
   if (!eventScene) return story;
+  const bridgeLines = {
+    anger: "そのあとも、そのことは胸の中で少し熱く残っていました。",
+    sadness: "そのできごとは、帰り道になっても心のすみに残っていました。",
+    anxiety: "そのことを思い出すと、手の中が少しひんやりしました。",
+    tired: "その日のできごとは、からだの重さといっしょに残っていました。",
+    joy: "そのできごとは、あとで思い出してもほほがゆるむ光でした。",
+    growth: "そのできごとは、次の一歩の入口みたいに残っていました。",
+  };
 
   return {
     ...story,
     paragraphs: [
       ...eventScene.opening,
-      `そのあとも、そのことは胸の中に少し残っていました。`,
+      bridgeLines[family] || bridgeLines.anger,
       ...story.paragraphs,
     ],
   };
@@ -1093,74 +1137,183 @@ const priorityStoryBuilders = {
     }),
 };
 
-function buildGenericStory({ name, emotion, detail, backdrop, eventScene }) {
-  const storyType = chooseStoryType(emotion, detail);
-  const type = storyTypeData[storyType] || storyTypeData.A;
-  const isPositive = emotion.type === "positive";
-
-  const openingParagraphs = eventScene?.opening || [
-    isPositive
-      ? `${name}は、その日、「${emotion.label}」という きもちを 小さな たからものみたいに 持っていました。`
-      : `${name}は、その日、「${emotion.label}」という きもちを からだの どこかで 感じていました。`,
+function buildAngerGroupStory({ name, emotion, detail, eventScene }) {
+  const opening = eventScene?.opening || [
+    `${name}は、あそびの途中で、思ったようにいかないことがありました。`,
+    `「もう」と言った声が、じぶんでもびっくりするくらい強く出ました。`,
   ];
-
-  const dailyLine =
-    storyType === "C"
-      ? `朝の 光や、足もとの 音や、手の中の ぬくもりが、いつもより 少し はっきり 見えました。`
-      : `いつもの 場所にいるのに、まわりの 音が 少し 遠くなったり、近くなったりしました。`;
-
-  const dialogue =
-    storyType === "D"
-      ? `ごまじろうは「${detail.wish}って、からだが だしている こえかもしれないね」と 言いました。`
-      : storyType === "G"
-        ? `ごまじろうは「${detail.wish}は、じぶんを まもる 線かもしれないね」と 言いました。`
-        : storyType === "F"
-          ? `ごまじろうは「${detail.wish}は、だいじな ものに ふれた しるしなのかも」と 言いました。`
-          : storyType === "C"
-            ? `ごまじろうは「${detail.wish}を そっと しまっておくのも、だれかに 見せるのも、どちらも いいね」と 言いました。`
-            : `ごまじろうは「${detail.wish}が、おくのほうで 待っていたのかもしれないね」と 言いました。`;
-
-  const turn =
-    storyType === "C"
-      ? `${name}は、その きもちを 手のひらに のせるみたいに、近くの人へ 少しだけ 見せました。`
-      : storyType === "D"
-        ? `${name}は、すぐに 元気に なることより、今の からだの こえを 聞いてみることに しました。`
-        : storyType === "G"
-          ? `${name}は、小さな こえで「きょうは こうしたい」と 言ってみました。`
-          : storyType === "F"
-            ? `${name}は、思いどおりに ならない きもちも 抱えたまま、そばに いる人の 顔を 見ました。`
-            : `${name}は、その きもちを 追い出さず、ことばに なるところまで 待ってみました。`;
-
-  const ending =
-    storyType === "C"
-      ? `ほんとうに ${name}って、心に ともった きもちを、じぶんの 速さで たいせつに できる子なんですね。`
-      : storyType === "D"
-        ? `ほんとうに ${name}って、がんばる 力も、やすむ こえを 聞く 力も 持っている子なんですね。`
-        : storyType === "G"
-          ? `ほんとうに ${name}って、やさしさの中に、じぶんの こえを 見つけられる子なんですね。`
-          : storyType === "F"
-            ? `ほんとうに ${name}って、かなわない きもちが あっても、たいせつを 失わずに いられる子なんですね。`
-            : `ほんとうに ${name}って、きもちの おくにある ほんとうの こえを 見つけられる子なんですね。`;
+  const actor = eventScene?.actor || "ママ";
+  const wanted = detail.id === "no" ? "やめてほしかった" : detail.id === "cherished" ? "たいせつにしてほしかった" : "見てほしかった";
 
   return createStory({
-    title: type.title(name, emotion),
+    title: `${emotion.label}日の ${name}`,
     paragraphs: [
-      ...openingParagraphs,
-      dailyLine,
-      `そこへ、ことりの ぴーと ごまあざらしの ごまじろうが やってきました。`,
-      `ぴーは「その きもち、ここに いても いい気がする」と 言いました。`,
-      dialogue,
-      `${name}は、すぐに こたえを 出しませんでした。`,
-      `でも、むねの中で 何かが 少しだけ うごきました。`,
-      turn,
-      `${backdrop.place}の 空気が、心の中に ひろがりました。`,
-      `${backdrop.texture}`,
-      `${companions.bird}と ${companions.seal}は、答えを きめずに、となりで その 場面を 見ていました。`,
-      ending,
+      ...opening,
+      `${name}の手はぎゅっと丸くなり、足はその場で止まりました。`,
+      `ほっぺが熱くなって、言いたいことが口の前でつかえました。`,
+      `ぴーが「声、大きく出ちゃったね」と言いました。`,
+      `ごまじろうは「いま、止められた感じがしたのかな」と、短く聞きました。`,
+      `${name}は「いやだった」とだけ言いました。`,
+      `ふーっと息をしても、からだの中のぷんぷんはまだ残っていました。`,
+      `それでも、ぴーとごまじろうは急がず、${name}の顔を見ていました。`,
+      `少しあとで、${actor}が「さっき、どうしたの？」と聞きました。`,
+      `${name}は、手をひらいたり閉じたりしながら、「ほんとうは、${wanted}の」と言いました。`,
+      `${actor}は「そうだったんだね。教えてくれてありがとう」と言いました。`,
+      `ぷんぷんは少し残ったまま、声の形だけが変わりました。`,
+      `ほんとうに${name}って、強い気もちの奥にある願いを、言葉にできる子なんですね。`,
     ],
-    strength: `${name}は、「${emotion.label}」の中にある「${detail.label}」を、少しずつ 見つめました。`,
-    compass: detail.compass || type.compass,
+    strength: `${name}は、強く出た気もちの奥にある「${wanted}」を、相手に伝える力を持っていました。`,
+    compass: "強い声の下には、見てほしいことや、やめてほしいことがかくれている日があります。",
   });
+}
+
+function buildSadnessGroupStory({ name, emotion, detail, eventScene }) {
+  const opening = eventScene?.opening || [
+    `${name}は、朝の道をゆっくり歩いていました。`,
+    `いつもの音が、今日は少し遠くから聞こえるようでした。`,
+  ];
+
+  return createStory({
+    title: `${name}としずかな ${emotion.label}`,
+    paragraphs: [
+      ...opening,
+      `${name}の目は下を向いて、くつの先ばかり見ていました。`,
+      `声を出そうとしても、のどのところで小さく止まりました。`,
+      `ぴーは「今日は、声が小さい日なんだね」と言いました。`,
+      `ごまじろうは「ひとりで持つには、少し重かったのかな」と言いました。`,
+      `${name}は、うなずくかわりに、そでをぎゅっとにぎりました。`,
+      `昼すぎ、あたたかいスープのにおいがしました。`,
+      `ひとくち飲むと、おなかの中に小さな明かりがともりました。`,
+      `かなしい気もちは、まだなくなりませんでした。`,
+      `帰り道、先生が「今日は少ししずかだったね」と声をかけました。`,
+      `${name}は「ひとりにしないでほしかった」と、小さく言いました。`,
+      `先生は「言ってくれてありがとう。ここで少し休もうか」と言いました。`,
+      `ほんとうに${name}って、かなしい日の中でも、小さなあたたかさを見つけられる子なんですね。`,
+    ],
+    strength: `${name}は、しずかな気もちを抱えたまま、小さな安心に気づけました。`,
+    compass: "かなしい日にも、味や音や手のぬくもりが、そっと帰り道を照らすことがあります。",
+  });
+}
+
+function buildAnxietyGroupStory({ name, emotion, detail, eventScene }) {
+  const opening = eventScene?.opening || [
+    `${name}は、明日のことを考えて、ランドセルの中を何度も見ました。`,
+    `えんぴつも、ノートも、ちゃんと入っているのに、まだ心配でした。`,
+  ];
+
+  return createStory({
+    title: `${name}の ふあんな朝`,
+    paragraphs: [
+      ...opening,
+      `${name}の手は少し冷たくて、くつをはく足もゆっくりでした。`,
+      `「もしできなかったら」と思うと、おなかがきゅっとしました。`,
+      `ぴーは「何回もたしかめたくなるんだね」と言いました。`,
+      `ごまじろうは「こわいまま、少しだけ持っていけるかな」と聞きました。`,
+      `${name}は、首を少しだけ横にふりました。`,
+      `それで、今日は玄関でひと呼吸してから決めることにしました。`,
+      `ママは「行くかどうか、ここで一緒に考えよう」と言いました。`,
+      `${name}は「しっぱいしたくなかった」と、くつの先を見ながら言いました。`,
+      `ママは「それくらい大事だったんだね」と答えました。`,
+      `行く道はまだ少しこわかったけれど、手の中には一緒に持ってくれる感じが残りました。`,
+      `ほんとうに${name}って、ふあんを消せなくても、小さな一歩を選べる子なんですね。`,
+    ],
+    strength: `${name}は、こわさを無理にしまわず、誰かと一緒に持つ力を見つけました。`,
+    compass: "ふあんは、うまくやりたい気もちのそばで、小さくふるえることがあります。",
+  });
+}
+
+function buildTiredGroupStory({ name, emotion, detail, eventScene }) {
+  const opening = eventScene?.opening || [
+    `${name}は、朝からいろいろなことをがんばっていました。`,
+    `用意をして、歩いて、返事をして、また次のことをしました。`,
+  ];
+
+  return createStory({
+    title: `やすみたい日の ${name}`,
+    paragraphs: [
+      ...opening,
+      `夕方になると、足が床にくっついたみたいに重くなりました。`,
+      `まぶたも少し重くて、声を出すのもゆっくりになりました。`,
+      `ぴーは「今日は羽を休めたい日みたい」と言いました。`,
+      `ごまじろうは「たくさん使ったからだは、しずかにしたい時があるね」と言いました。`,
+      `${name}は「もう動きたくない」と言いました。`,
+      `ママは、コップに水を入れて、そばに置きました。`,
+      `${name}は「やすみたかった」と、やっと言いました。`,
+      `ママは「うん。今日は少し休もう」と言いました。`,
+      `元気になったわけではないけれど、からだの声は聞いてもらえました。`,
+      `ぴーは小さく羽をたたみ、ごまじろうはタオルをそばに置きました。`,
+      `ほんとうに${name}って、がんばったあとに、休む声を聞ける子なんですね。`,
+    ],
+    strength: `${name}は、元気を出すより先に、からだの声を聞く力を持っていました。`,
+    compass: "休みたい気もちは、弱さではなく、ここまで使ってきた力からの知らせです。",
+  });
+}
+
+function buildJoyGroupStory({ name, emotion, detail, eventScene }) {
+  const opening = eventScene?.opening || [
+    `${name}は、朝の光の中で、うれしいものを見つけました。`,
+    `それは、パンのにおいや、手の中のあたたかさみたいに小さなものでした。`,
+  ];
+
+  return createStory({
+    title: `${name}の うれしいかけら`,
+    paragraphs: [
+      ...opening,
+      `${name}の目はきらっとして、足どりも少し軽くなりました。`,
+      `ぴーは「なになに、見せて！」と羽をぱたぱたしました。`,
+      `ごまじろうは「ぼくにも少し見えるかな」と、となりに来ました。`,
+      `${name}は「これ、うれしい」と言って、手のひらを開きました。`,
+      `光やにおいや小さな音が、みんなの顔を少し明るくしました。`,
+      `おともだちも「ほんとだ」と笑いました。`,
+      `${name}は、うれしい気もちをひとりじめしなくても、へらないことを知りました。`,
+      `ぴーは「わけたら、きらきらが増えたね」と言いました。`,
+      `ごまじろうは「今日のぶん、ちゃんと覚えておきたいね」と言いました。`,
+      `ほんとうに${name}って、うれしい気もちを見つけて、そっと分けられる子なんですね。`,
+    ],
+    strength: `${name}は、あたたかい気もちを、見せたり伝えたりする力を持っていました。`,
+    compass: "うれしい気もちは、誰かと分けても、小さくならない灯りです。",
+  });
+}
+
+function buildGrowthGroupStory({ name, emotion, detail, eventScene }) {
+  const opening = eventScene?.opening || [
+    `${name}は、小さなことにもう一度挑戦していました。`,
+    `少しむずかしくて、でも、もう少しやってみたい気もちがありました。`,
+  ];
+
+  return createStory({
+    title: `${name}の 小さなはた`,
+    paragraphs: [
+      ...opening,
+      `${name}の指先はまっすぐで、目はじっと前を見ていました。`,
+      `できたところまで来ると、胸の中に小さなはたが立ったみたいでした。`,
+      `ぴーは「いまの、見たよ！」と声をはずませました。`,
+      `ごまじろうは「大きな音じゃないけど、ちゃんと進んだね」と言いました。`,
+      `${name}は「できた」と、少し照れて言いました。`,
+      `それから「またやってみたい」と、もう一度手を伸ばしました。`,
+      `おともだちが「どうやったの？」と聞きました。`,
+      `${name}は、ゆっくりやり方を見せました。`,
+      `じまんではなく、忘れたくない小さなできたでした。`,
+      `ぴーとごまじろうは、そのできたを宝物みたいに見ていました。`,
+      `ほんとうに${name}って、小さな一歩を覚えて、次へつなげられる子なんですね。`,
+    ],
+    strength: `${name}は、できたことを大げさにしすぎず、次の一歩へつなぐ力を持っていました。`,
+    compass: "できたことは、小さくても、明日の自分を支えるしるしになります。",
+  });
+}
+
+function buildGenericStory({ name, emotion, detail, backdrop, eventScene }) {
+  const family = getStoryFamily(emotion, detail);
+  const builders = {
+    anger: buildAngerGroupStory,
+    sadness: buildSadnessGroupStory,
+    anxiety: buildAnxietyGroupStory,
+    tired: buildTiredGroupStory,
+    joy: buildJoyGroupStory,
+    growth: buildGrowthGroupStory,
+  };
+
+  return builders[family]({ name, emotion, detail, backdrop, eventScene });
 }
 
 function buildStory() {
@@ -1169,13 +1322,14 @@ function buildStory() {
   const backdrop = chooseBackdrop(emotion, detail);
   const name = getDisplayName();
   const eventScene = makeEventScene(name, state.eventText);
+  const family = getStoryFamily(emotion, detail);
   const builder = priorityStoryBuilders[storyKey(emotion, detail)];
 
   if (builder) {
     const story = builder({ name, emotion, detail, backdrop, eventScene });
     return storyKey(emotion, detail) === "angry::understood"
       ? story
-      : withEventScene(story, eventScene);
+      : withEventScene(story, eventScene, family);
   }
 
   return buildGenericStory({ name, emotion, detail, backdrop, eventScene });
