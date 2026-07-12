@@ -69,6 +69,8 @@ http://localhost:8000
 変更内容は `CHANGELOG.md` で管理します。
 `push-docs.command` を使うと、READMEや `/docs` のファイルと一緒に `CHANGELOG.md` もGitHubへ送られます。
 
+画面表示や機能を変更した場合は、APP_VERSIONを更新すること。
+
 ## 今後よくできそうなこと
 
 - 物語の文章パターンを増やす
