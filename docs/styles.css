@@ -103,6 +103,10 @@ h1 {
   letter-spacing: 0;
 }
 
+.screen-title h1 {
+  font-size: clamp(2.16rem, 12.8vw, 3.48rem);
+}
+
 h2 {
   margin-bottom: 0;
   font-size: clamp(1.55rem, 7vw, 2.05rem);
@@ -138,7 +142,16 @@ h2 {
   border-radius: 8px;
   overflow: hidden;
   background:
-    linear-gradient(#d8edf0 0 54%, #e7ead2 54% 100%);
+    url("top-main-image.png") center / contain no-repeat,
+    #fbf6df;
+}
+
+.screen-title .sky-picture::before,
+.screen-title .sky-picture::after,
+.screen-title .paper-sun,
+.screen-title .paper-hill,
+.screen-title .tiny-house {
+  display: none;
 }
 
 .sky-picture::before,
