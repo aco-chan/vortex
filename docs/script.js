@@ -6,7 +6,7 @@ const state = {
   detail: null,
 };
 
-const APP_VERSION = "v0.6.6";
+const APP_VERSION = "v0.6.7";
 const APP_VERSION_DATE = "2026-07-12";
 
 window.EmoCompassVersion = APP_VERSION;

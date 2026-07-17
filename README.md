@@ -69,7 +69,8 @@ http://localhost:8000
 変更内容は `CHANGELOG.md` で管理します。
 `push-docs.command` を使うと、READMEや `/docs` のファイルと一緒に `CHANGELOG.md` もGitHubへ送られます。
 
-画面表示や機能を変更した場合は、APP_VERSIONを更新すること。
+画面表示や機能を変更した場合は、`docs/script.js` の `APP_VERSION` と `APP_VERSION_DATE` を更新すること。
+同じ変更について、`CHANGELOG.md` にバージョン、日付、変更概要を必ず記録すること。
 
 ## 今後よくできそうなこと
 
