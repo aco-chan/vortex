@@ -6,7 +6,7 @@ cd "$(dirname "$0")"
 echo "きもちの絵本: 変更分をGitHubへ保存します。"
 echo
 
-git add README.md CHANGELOG.md docs/index.html docs/styles.css docs/script.js push-docs.command .gitignore
+git add README.md CHANGELOG.md docs push-docs.command .gitignore
 
 visible_version="$(grep -Eo 'const APP_VERSION = "v[0-9]+\.[0-9]+\.[0-9]+"' docs/script.js | sed -E 's/.*"(v[0-9]+\.[0-9]+\.[0-9]+)".*/\1/' | head -n 1)"
 latest_version="$(awk '/^## v/{ print $2; exit }' CHANGELOG.md 2>/dev/null || true)"
